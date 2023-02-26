@@ -81,24 +81,24 @@ namespace SistemaLanches.Models
         }
 
 
-        public static CarrinhoCompra GetCarrinho(IServiceProvider service)
+        public static CarrinhoCompra GetCarrinho(IServiceProvider services)
         {
-            // Define uma seção
-            ISession session = service.GetRequiredService<HttpContextAccessor>()?.HttpContext.Session;
+            //define uma sessão
+            ISession session = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext.Session;
 
-            // Obtem um serviço do tipo do nosso contexto
-            var context = service.GetService<AppDbContext>();
+            //obtem um serviço do tipo do nosso contexto 
+            var context = services.GetService<AppDbContext>();
 
-            // Obtem ou gera o Id do carrinho
-            string carrinhoId = session.GetString("CarrinhoCompraId") ?? Guid.NewGuid().ToString();
+            //obtem ou gera o Id do carrinho
+            string carrinhoId = session.GetString("CarrinhoId") ?? Guid.NewGuid().ToString();
 
-            // Atribui o id do carrinho na Sessão
-            session.SetString("CarrinhoCompraId", carrinhoId);
+            //atribui o id do carrinho na Sessão
+            session.SetString("CarrinhoId", carrinhoId);
 
-            // Retorna o carrinho com o contexto e o Id atribuido ou obtido
+            //retorna o carrinho com o contexto e o Id atribuido ou obtido
             return new CarrinhoCompra(context)
             {
-                CarrinhoCompraId = carrinhoId,
+                CarrinhoCompraId = carrinhoId
             };
         }
     }

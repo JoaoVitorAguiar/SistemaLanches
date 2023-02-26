@@ -1,4 +1,5 @@
-﻿using SistemaLanches.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using SistemaLanches.Context;
 using SistemaLanches.Migrations;
 
 namespace SistemaLanches.Models
@@ -54,7 +55,30 @@ namespace SistemaLanches.Models
             }
         }
 
+        public List<CarrinhoCompraItem> GetCarrinhoCompraItens()
+        {
+            return CarrinhoCompraItens ??
+                   (CarrinhoCompraItens =
+                       _context.CarrinhoCompraItens.Where(c => c.CarrinhoCompraId == CarrinhoCompraId)
+                           .Include(s => s.Lanche)
+                           .ToList());
+        }
 
+        public void LimparCarrinho()
+        {
+            var carrinhoItens = _context.CarrinhoCompraItens
+                                 .Where(carrinho => carrinho.CarrinhoCompraId == CarrinhoCompraId);
+
+            _context.CarrinhoCompraItens.RemoveRange(carrinhoItens);
+            _context.SaveChanges();
+        }
+
+        public decimal GetCarrinhoCompraTotal()
+        {
+            var total = _context.CarrinhoCompraItens.Where(c => c.CarrinhoCompraId == CarrinhoCompraId)
+                .Select(c => c.Lanche.Preco * c.Quantidade).Sum();
+            return total;
+        }
 
 
         public static CarrinhoCompra GetCarrinho(IServiceProvider service)
@@ -66,10 +90,10 @@ namespace SistemaLanches.Models
             var context = service.GetService<AppDbContext>();
 
             // Obtem ou gera o Id do carrinho
-            string carrinhoId = session.GetString("CarrinhoId") ?? Guid.NewGuid().ToString();
+            string carrinhoId = session.GetString("CarrinhoCompraId") ?? Guid.NewGuid().ToString();
 
             // Atribui o id do carrinho na Sessão
-            session.SetString("CarrinhoId", carrinhoId);
+            session.SetString("CarrinhoCompraId", carrinhoId);
 
             // Retorna o carrinho com o contexto e o Id atribuido ou obtido
             return new CarrinhoCompra(context)

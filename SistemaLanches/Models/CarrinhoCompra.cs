@@ -15,7 +15,7 @@ namespace SistemaLanches.Models
         public string CarrinhoCompraId { get; set; }
         public List<CarrinhoCompraItem> CarrinhoCompraItens { get; set; }
 
-        public void AdicionarCarrinho(Lanche lanche)
+        public void AdicionarAoCarrinho(Lanche lanche)
         {
             var carrinhoCompraItem = _context.CarrinhoCompraItens.SingleOrDefault(
                     s => s.Lanche.LancheId == lanche.LancheId &&
@@ -37,6 +37,25 @@ namespace SistemaLanches.Models
             }
             _context.SaveChanges();
         }
+
+        public void RemoverDoCarrinho(Lanche lanche)
+        {
+            var carrinhoCompraItem = _context.CarrinhoCompraItens.SingleOrDefault(
+                    s => s.Lanche.LancheId == lanche.LancheId &&
+                    s.CarrinhoCompraId == CarrinhoCompraId
+                );
+            if (carrinhoCompraItem == null)
+            {
+                if (carrinhoCompraItem.Quantidade > 1)
+                    carrinhoCompraItem.Quantidade--;
+                else
+                    _context.CarrinhoCompraItens.Remove(carrinhoCompraItem);
+                _context.SaveChanges();
+            }
+        }
+
+
+
 
         public static CarrinhoCompra GetCarrinho(IServiceProvider service)
         {

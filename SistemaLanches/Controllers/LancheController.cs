@@ -28,18 +28,10 @@ namespace SistemaLanches.Controllers
             }
             else
             {
-                if (string.Equals("Normal", categoria, StringComparison.OrdinalIgnoreCase))
-                {
-                    lanches = _lacheRepository.Lanches
-                        .Where(l => l.Categoria.CategoriaNome.Equals("Normal"))
-                        .OrderBy(l => l.LancheNome);
-                }
-                else
-                {
-                    lanches = _lacheRepository.Lanches
-                       .Where(l => l.Categoria.CategoriaNome.Equals("Natural"))
-                       .OrderBy(l => l.LancheNome);
-                }
+                lanches = _lacheRepository.Lanches
+                           .Where(l => l.Categoria.CategoriaNome.Equals(categoria))
+                           .OrderBy(c => c.LancheNome);
+
                 categoriaAtual = categoria;
             }
 

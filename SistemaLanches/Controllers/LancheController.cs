@@ -8,12 +8,10 @@ namespace SistemaLanches.Controllers
 {
     public class LancheController : Controller
     {
-        private readonly ILancheRepository _lacheRepository;
-        private readonly ICategoriaRepository _categoriaRepository;
-
+        private readonly ILancheRepository _lancheRepository;
         public LancheController(ILancheRepository lacheRepository)
         {
-            _lacheRepository = lacheRepository;
+            _lancheRepository = lacheRepository;
         }
 
         public IActionResult List(string categoria)
@@ -23,12 +21,12 @@ namespace SistemaLanches.Controllers
 
             if (string.IsNullOrEmpty(categoria))
             {
-                lanches = _lacheRepository.Lanches.OrderBy(l => l.LancheId);
+                lanches = _lancheRepository.Lanches.OrderBy(l => l.LancheId);
                 categoriaAtual = "Todos os lanches";
             }
             else
             {
-                lanches = _lacheRepository.Lanches
+                lanches = _lancheRepository.Lanches
                            .Where(l => l.Categoria.CategoriaNome.Equals(categoria))
                            .OrderBy(c => c.LancheNome);
 
@@ -42,6 +40,12 @@ namespace SistemaLanches.Controllers
             };
 
             return View(lanchesListViewModel);
+        }
+
+        public IActionResult Details(int lancheId)
+        {
+            var lanche = _lancheRepository.Lanches.FirstOrDefault(l => l.LancheId == lancheId);
+            return View(lanche);
         }
     }
 }

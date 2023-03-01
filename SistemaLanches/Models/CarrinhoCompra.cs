@@ -72,7 +72,6 @@ namespace SistemaLanches.Models
             _context.CarrinhoCompraItens.RemoveRange(carrinhoItens);
             _context.SaveChanges();
         }
-
         public decimal GetCarrinhoCompraTotal()
         {
             var total = _context.CarrinhoCompraItens.Where(c => c.CarrinhoCompraId == CarrinhoCompraId)

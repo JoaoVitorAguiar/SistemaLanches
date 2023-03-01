@@ -30,9 +30,11 @@ namespace SistemaLanches.Controllers
             return View(carrinhoCompraViewModel);
         }
 
-        public IActionResult AdiocionarItemNoCarrinhoCompra(int lancheId) 
-        { 
-            var lancheSelecionado = _lancheRepository.Lanches.FirstOrDefault(l => l.LancheId == lancheId);  
+        public IActionResult AdicionarItemNoCarrinhoCompra(int lancheId) 
+        {
+            var lancheSelecionado = _lancheRepository.Lanches
+                                    .FirstOrDefault(p => p.LancheId == lancheId);
+
             if (lancheSelecionado != null)
             {
                 _carrinhoCompra.AdicionarAoCarrinho(lancheSelecionado);

@@ -31,6 +31,7 @@ namespace SistemaLanches.Models
                     Lanche = lanche,
                     Quantidade = 1
                 };
+                _context.CarrinhoCompraItens.Add(carrinhoCompraItem);
             }
             else
             {
@@ -45,7 +46,7 @@ namespace SistemaLanches.Models
                     s => s.Lanche.LancheId == lanche.LancheId &&
                     s.CarrinhoCompraId == CarrinhoCompraId
                 );
-            if (carrinhoCompraItem == null)
+            if (carrinhoCompraItem != null)
             {
                 if (carrinhoCompraItem.Quantidade > 1)
                     carrinhoCompraItem.Quantidade--;

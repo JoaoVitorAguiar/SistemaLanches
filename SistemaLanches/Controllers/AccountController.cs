@@ -49,3 +49,4 @@ namespace SistemaLanches.Controllers
             return View(loginVM);
         }
     }
+}

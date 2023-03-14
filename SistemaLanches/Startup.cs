@@ -4,6 +4,7 @@ using SistemaLanches.Context;
 using SistemaLanches.Models;
 using SistemaLanches.Repositories;
 using SistemaLanches.Repositories.Interfaces;
+using SistemaLanches.Services;
 
 namespace SistemaLanches;
 public class Startup
@@ -42,6 +43,16 @@ public class Startup
         services.AddTransient<ICategoriaRepository, CategoriaRepository>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IPedidoRepository, PedidoRepository>();
+        services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("Admin",
+                politica =>
+                {
+                    politica.RequireRole("Admin");
+                });
+        }); 
 
         services.AddScoped(sp => CarrinhoCompra.GetCarrinho(sp));
 
@@ -52,7 +63,8 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+        ISeedUserRoleInitial seedUserRoleInitial)
     {
         if (env.IsDevelopment())
         {
@@ -68,6 +80,12 @@ public class Startup
         app.UseStaticFiles();
 
         app.UseRouting();
+        
+        // Cria os perfis
+        seedUserRoleInitial.SeedRoles();
+        // Cria os Usuários e atribui  aos perfis
+        seedUserRoleInitial.SeedUsers();
+
         app.UseSession();
 
         app.UseAuthentication();

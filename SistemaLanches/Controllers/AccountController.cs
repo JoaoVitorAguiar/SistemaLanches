@@ -67,6 +67,7 @@ namespace SistemaLanches.Controllers
                 if (result.Succeeded)
                 {
                     //await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _userManager.AddToRoleAsync(user, "Menber");
                     return RedirectToAction("Login", "Account");
                 }
                 else

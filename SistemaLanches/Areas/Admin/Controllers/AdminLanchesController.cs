@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using ReflectionIT.Mvc.Paging;
 using SistemaLanches.Context;
 using SistemaLanches.Models;
 
@@ -24,10 +25,27 @@ namespace SistemaLanches.Areas.Admin.Controllers
         }
 
         // GET: Admin/AdminLanches
+        /*
         public async Task<IActionResult> Index()
         {
             var appDbContext = _context.Lanches.Include(l => l.Categoria);
             return View(await appDbContext.ToListAsync());
+        }
+        */
+
+        public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "LancheNome")
+        {
+            var resultado = _context.Lanches.Include(l => l.Categoria).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                resultado = resultado.Where(p => p.LancheNome.Contains(filter));
+            }
+
+            var model = await PagingList.CreateAsync(resultado, 2, pageindex, sort, "LancheNome");
+            model.RouteValue = new RouteValueDictionary { { "filter", filter } };
+            return View(model);
+
         }
 
         // GET: Admin/AdminLanches/Details/5
@@ -59,6 +77,7 @@ namespace SistemaLanches.Areas.Admin.Controllers
         // POST: Admin/AdminLanches/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+   
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("LancheId,LancheNome,DescricaoCurta,DescricaoDetalhada,Preco,ImagemUrl,ImagemThumbnailUrl,IsLanchePreferido,EmEstoque,CategoriaId")] Lanche lanche)
@@ -69,7 +88,7 @@ namespace SistemaLanches.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoriaId"] = new SelectList(_context.Categorias, "CategoriaId", "CategoriaNome", lanche.CategoriaId);
+            ViewBag.CategoriaId = new SelectList(_context.Categorias, "CategoriaId", "CategoriaNome", lanche.CategoriaId);
             return View(lanche);
         }
 
@@ -120,6 +139,7 @@ namespace SistemaLanches.Areas.Admin.Controllers
                         throw;
                     }
                 }
+                ViewBag.CategoriaId = new SelectList(_context.Categorias, "CategoriaId", "CategoriaNome", lanche.CategoriaId);
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "CategoriaId", "CategoriaNome", lanche.CategoriaId);

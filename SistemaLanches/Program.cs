@@ -7,12 +7,15 @@ using SistemaLanches.Models;
 using SistemaLanches.Repositories.Interfaces;
 using SistemaLanches.Repositories;
 using SistemaLanches.Services;
+using FastReport.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
            options.UseSqlServer(connection));
+
+FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
@@ -66,6 +69,9 @@ else
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
+app.UseFastReport();
+
 app.UseRouting();
 
 CriarPerfisUsuarios(app);
